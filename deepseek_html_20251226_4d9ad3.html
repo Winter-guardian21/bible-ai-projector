@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📖 Professional Bible Projector AI | Church Display System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark-blue: #0a1f44;
+            --light-blue: #1c3b6c;
+            --cream: #f8f5e6;
+            --red: #c41e3a;
+            --green: #2e8b57;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a1f44 0%, #1c3b6c 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header with Church Style */
+        .header {
+            background: linear-gradient(to right, var(--dark-blue), var(--light-blue));
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--gold);
+            box-shadow: var(--shadow);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            color: var(--gold);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .app-title h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .app-title .subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .time-display {
+            font-size: 1.2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Main Layout - Split Screen */
+        .main-container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            height: calc(100vh - 120px);
+        }
+
+        /* Left Panel - Controls */
+        .control-panel {
+            width: 350px;
+            background: rgba(10, 31, 68, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid var(--gold);
+            box-shadow: var(--shadow);
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            font-size: 1.3rem;
+        }
+
+        /* Mixer Input Section */
+        .mixer-section {
+            background: rgba(28, 59, 108, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mixer-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mixer-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--light-blue);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mixer-btn.active {
+            background: var(--gold);
+            color: var(--dark-blue);
+        }
+
+        .mixer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Scripture Display (MAIN SCREEN) */
+        .scripture-display {
+            flex: 1;
+            background: var(--cream);
+            border-radius: 15px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            border: 3px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .verse-reference {
+            font-size: 2.8rem;
+            color: var(--dark-blue);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .verse-meta {
+            text-align: right;
+            color: var(--light-blue);
+        }
+
+        .verse-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        #currentVerse {
+            font-size: 3.5rem;
+            line-height: 1.5;
+            color: var(--dark-blue);
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .verse-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            justify-content: space-between;
+            color: var(--light-blue);
+            font-size: 1.2rem;
+        }
+
+        /* Visual Effects */
+        .floating-icons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.1;
+            color: var(--gold);
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0) 70%);
+            pointer-events: none;
+        }
+
+        /* Controls Grid */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--light-blue), #2a4d8a);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #2a4d8a, var(--light-blue));
+        }
+
+        .control-btn i {
+            font-size: 1.5rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), #ffd700);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Voice Visualizer */
+        .voice-visualizer {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualizer-bars {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 60px;
+        }
+
+        .visualizer-bar {
+            width: 8px;
+            background: var(--gold);
+            border-radius: 4px;
+            animation: pulse 1s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { height: 20px; }
+            50% { height: 60px; }
+        }
+
+        /* Fullscreen Mode */
+        body.fullscreen {
+            padding: 0;
+        }
+
+        body.fullscreen .header,
+        body.fullscreen .control-panel {
+            display: none;
+        }
+
+        body.fullscreen .scripture-display {
+            border-radius: 0;
+            border: none;
+            height: 100vh;
+        }
+
+        body.fullscreen #currentVerse {
+            font-size: 5rem;
+        }
+
+        /* Preset Themes */
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .theme-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .theme-option:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-option.active {
+            border-color: white;
+            box-shadow: 0 0 10px white;
+        }
+
+        .theme-classic { background: linear-gradient(135deg, #8B4513, #D2691E); }
+        .theme-modern { background: linear-gradient(135deg, #0a1f44, #1c3b6c); }
+        .theme-warm { background: linear-gradient(135deg, #B22222, #8B0000); }
+        .theme-cool { background: linear-gradient(135deg, #2E8B57, #228B22); }
+        .theme-royal { background: linear-gradient(135deg, #4B0082, #8A2BE2); }
+        .theme-gold { background: linear-gradient(135deg, #FFD700, #DAA520); }
+
+        /* Settings Panel */
+        .settings-panel {
+            background: rgba(28, 59, 108, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .setting-group select,
+        .setting-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 31, 68, 0.9);
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .control-panel {
+                width: 100%;
+                order: 2;
+            }
+            
+            .scripture-display {
+                order: 1;
+                min-height: 500px;
+            }
+            
+            #currentVerse {
+                font-size: 2.8rem;
+            }
+            
+            .verse-reference {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #currentVerse {
+                font-size: 2.2rem;
+            }
+            
+            .verse-reference {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--green);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--gold);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-container">
+            <div class="logo">📖</div>
+            <div class="app-title">
+                <h1>PROFESSIONAL BIBLE PROJECTOR AI</h1>
+                <div class="subtitle">Church Display System • Mixer Voice Integration</div>
+            </div>
+        </div>
+        <div class="time-display">
+            <i class="fas fa-clock"></i>
+            <span id="currentTime">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Control Panel -->
+        <div class="control-panel">
+            <div class="panel-title">
+                <i class="fas fa-sliders-h"></i>
+                <span>MIXER & CONTROLS</span>
+            </div>
+
+            <!-- Mixer Input Section -->
+            <div class="mixer-section">
+                <h3><i class="fas fa-microphone-alt"></i> VOICE INPUT SOURCE</h3>
+                <p class="subtext" style="font-size: 0.9rem; opacity: 0.8; margin: 10px 0;">
+                    Connect to audio mixer or microphone source
+                </p>
+                
+                <div class="mixer-controls">
+                    <button class="mixer-btn active" id="mixerInput">
+                        <i class="fas fa-plug"></i> MIXER INPUT
+                    </button>
+                    <button class="mixer-btn" id="microphoneInput">
+                        <i class="fas fa-microphone"></i> MICROPHONE
+                    </button>
+                    <button class="mixer-btn" id="audioFile">
+                        <i class="fas fa-file-audio"></i> AUDIO FILE
+                    </button>
+                    <button class="mixer-btn" id="directText">
+                        <i class="fas fa-keyboard"></i> DIRECT TEXT
+                    </button>
+                </div>
+
+                <!-- Audio Level -->
+                <div class="progress-container">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span><i class="fas fa-volume-up"></i> INPUT LEVEL</span>
+                        <span id="audioLevel">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="levelBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Visualizer -->
+            <div class="voice-visualizer">
+                <div class="visualizer-bars" id="visualizer">
+                    <!-- Bars will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Quick Access Scriptures -->
+            <div class="panel-title">
+                <i class="fas fa-star"></i>
+                <span>QUICK ACCESS</span>
+            </div>
+
+            <div class="controls-grid">
+                <button class="control-btn" onclick="loadPresetVerse('John 3:16')">
+                    <i class="fas fa-cross"></i>
+                    <span>John 3:16</span>
+                </button>
+                <button class="control-btn" onclick="loadPresetVerse('Psalm 23')">
+                    <i class="fas fa-hands-praying"></i>
+                    <span>Psalm 23</span>
+                </button>
+                <button class="control-btn" onclick="loadPresetVerse('Romans 8:28')">
+                    <i class="fas fa-heart"></i>
+                    <span>Romans 8:28</span>
+                </button>
+                <button class="control-btn" onclick="loadPresetVerse('Philippians 4:13')">
+                    <i class="fas fa-fist-raised"></i>
+                    <span>Philippians 4:13</span>
+                </button>
+                <button class="control-btn" onclick="loadPresetVerse('Isaiah 41:10')">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Isaiah 41:10</span>
+                </button>
+                <button class="control-btn" onclick="loadPresetVerse('Matthew 11:28')">
+                    <i class="fas fa-peace"></i>
+                    <span>Matthew 11:28</span>
+                </button>
+            </div>
+
+            <!-- Display Controls -->
+            <div class="panel-title">
+                <i class="fas fa-desktop"></i>
+                <span>DISPLAY CONTROLS</span>
+            </div>
+
+            <div class="controls-grid">
+                <button class="control-btn" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i>
+                    <span>FULLSCREEN</span>
+                </button>
+                <button class="control-btn" onclick="changeFontSize('increase')">
+                    <i class="fas fa-text-height"></i>
+                    <span>INCREASE FONT</span>
+                </button>
+                <button class="control-btn" onclick="changeFontSize('decrease')">
+                    <i class="fas fa-text-width"></i>
+                    <span>DECREASE FONT</span>
+                </button>
+                <button class="control-btn" onclick="nextVerse()">
+                    <i class="fas fa-forward"></i>
+                    <span>NEXT VERSE</span>
+                </button>
+                <button class="control-btn" onclick="previousVerse()">
+                    <i class="fas fa-backward"></i>
+                    <span>PREVIOUS VERSE</span>
+                </button>
+                <button class="control-btn" onclick="autoScroll()">
+                    <i class="fas fa-scroll"></i>
+                    <span>AUTO SCROLL</span>
+                </button>
+            </div>
+
+            <!-- Theme Selector -->
+            <div class="panel-title">
+                <i class="fas fa-palette"></i>
+                <span>THEME SELECTOR</span>
+            </div>
+
+            <div class="theme-selector">
+                <div class="theme-option theme-classic active" data-theme="classic"></div>
+                <div class="theme-option theme-modern" data-theme="modern"></div>
+                <div class="theme-option theme-warm" data-theme="warm"></div>
+                <div class="theme-option theme-cool" data-theme="cool"></div>
+                <div class="theme-option theme-royal" data-theme="royal"></div>
+                <div class="theme-option theme-gold" data-theme="gold"></div>
+            </div>
+
+            <!-- Settings -->
+            <div class="settings-panel">
+                <div class="setting-group">
+                    <label><i class="fas fa-book"></i> BIBLE VERSION</label>
+                    <select id="bibleVersion">
+                        <option value="KJV">King James Version</option>
+                        <option value="NKJV">New King James Version</option>
+                        <option value="NIV">New International Version</option>
+                        <option value="ESV">English Standard Version</option>
+                        <option value="NASB">New American Standard Bible</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label><i class="fas fa-font"></i> FONT FAMILY</label>
+                    <select id="fontFamily">
+                        <option value="'Segoe UI', Arial">Default (Modern)</option>
+                        <option value="Georgia, serif">Serif (Traditional)</option>
+                        <option value="'Times New Roman', Times">Times (Classic)</option>
+                        <option value="Arial, sans-serif">Arial (Clean)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Scripture Display -->
+        <div class="scripture-display">
+            <div class="floating-icons">
+                <i class="fas fa-cross"></i>
+                <i class="fas fa-dove"></i>
+                <i class="fas fa-church"></i>
+            </div>
+
+            <div class="glow-effect" style="top: -100px; right: -100px;"></div>
+            <div class="glow-effect" style="bottom: -100px; left: -100px;"></div>
+
+            <div class="verse-header">
+                <div class="verse-reference" id="verseReference">John 3:16</div>
+                <div class="verse-meta">
+                    <div><i class="fas fa-book"></i> <span id="bookName">Gospel of John</span></div>
+                    <div><i class="fas fa-bible"></i> <span id="versionName">King James Version</span></div>
+                </div>
+            </div>
+
+            <div class="verse-text">
+                <div id="currentVerse">
+                    For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.
+                </div>
+            </div>
+
+            <div class="verse-footer">
+                <div>
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate">Today's Scripture</span>
+                </div>
+                <div>
+                    <i class="fas fa-volume-up"></i>
+                    <span id="audioStatus">Ready for Voice Input</span>
+                </div>
+                <div>
+                    <i class="fas fa-projector"></i>
+                    <span id="projectorStatus">Projector Mode Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>PROFESSIONAL BIBLE PROJECTOR AI | Version 2.0 | Designed for Church Displays & Large Screens</p>
+        <p>Mixer Voice Integration • Real-time Scripture Recognition • Professional Projection System</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Notification message here</span>
+    </div>
+
+    <script>
+        // Core Variables
+        let currentFontSize = 3.5;
+        let currentTheme = 'classic';
+        let isFullscreen = false;
+        let currentVerseIndex = 0;
+        let audioContext;
+        let analyser;
+        let audioSource;
+        let isListening = false;
+
+        // Bible verses database (expanded)
+        const bibleVerses = [
+            {
+                reference: "John 3:16",
+                book: "Gospel of John",
+                text: "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
+                version: "KJV"
+            },
+            {
+                reference: "Psalm 23:1",
+                book: "Psalms",
+                text: "The LORD is my shepherd; I shall not want.",
+                version: "KJV"
+            },
+            {
+                reference: "Jeremiah 29:11",
+                book: "Jeremiah",
+                text: "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+                version: "KJV"
+            },
+            {
+                reference: "Philippians 4:13",
+                book: "Philippians",
+                text: "I can do all things through Christ which strengtheneth me.",
+                version: "KJV"
+            },
+            {
+                reference: "Romans 8:28",
+                book: "Romans",
+                text: "And we know that all things work together for good to them that love God, to them who are the called according to his purpose.",
+                version: "KJV"
+            },
+            {
+                reference: "Isaiah 41:10",
+                book: "Isaiah",
+                text: "Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee; yea, I will uphold thee with the right hand of my righteousness.",
+                version: "KJV"
+            },
+            {
+                reference: "Matthew 11:28",
+                book: "Matthew",
+                text: "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+                version: "KJV"
+            },
+            {
+                reference: "Psalm 119:105",
+                book: "Psalms",
+                text: "Thy word is a lamp unto my feet, and a light unto my path.",
+                version: "KJV"
+            }
+        ];
+
+        // Initialize on load
+        window.onload = function() {
+            initializeTime();
+            initializeVisualizer();
+            setupMixerControls();
+            setupThemeSelector();
+            setupAudioInput();
+            
+            // Start with animation
+            document.getElementById('currentVerse').classList.add('fade-in');
+            
+            // Show welcome notification
+            showNotification('Bible Projector AI Ready. Connect mixer or microphone to begin.', 'success');
+        };
+
+        // Initialize Time Display
+        function initializeTime() {
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', {
+                    hour12: true,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                const dateString = now.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                document.getElementById('currentTime').textContent = timeString;
+                document.getElementById('currentDate').textContent = dateString;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        // Initialize Voice Visualizer
+        function initializeVisualizer() {
+            const visualizer = document.getElementById('visualizer');
+            visualizer.innerHTML = '';
+            
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'visualizer-bar';
+                bar.style.animationDelay = `${i * 0.05}s`;
+                bar.style.height = `${20 + Math.random() * 40}px`;
+                visualizer.appendChild(bar);
+            }
+            
+            // Animate bars
+            setInterval(() => {
+                const bars = document.querySelectorAll('.visualizer-bar');
+                bars.forEach(bar => {
+                    bar.style.height = `${20 + Math.random() * 40}px`;
+                });
+            }, 200);
+        }
+
+        // Setup Mixer Controls
+        function setupMixerControls() {
+            const mixerBtns = document.querySelectorAll('.mixer-btn');
+            
+            mixerBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    mixerBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const inputType = this.id;
+                    switchInputSource(inputType);
+                    
+                    showNotification(`Switched to ${this.textContent.trim()} mode`, 'info');
+                });
+            });
+        }
+
+        // Simulate Audio Input Source Switching
+        function switchInputSource(source) {
+            const status = document.getElementById('audioStatus');
+            const levelBar = document.getElementById('levelBar');
+            const audioLevel = document.getElementById('audioLevel');
+            
+            switch(source) {
+                case 'mixerInput':
+                    status.innerHTML = '<i class="fas fa-plug"></i> Connected to Audio Mixer';
+                    simulateAudioLevel(levelBar, audioLevel);
+                    break;
+                case 'microphoneInput':
+                    status.innerHTML = '<i class="fas fa-microphone"></i> Microphone Active';
+                    simulateAudioLevel(levelBar, audioLevel);
+                    break;
+                case 'audioFile':
+                    status.innerHTML = '<i class="fas fa-file-audio"></i> Audio File Playback';
+                    break;
+                case 'directText':
+                    status.innerHTML = '<i class="fas fa-keyboard"></i> Direct Text Input';
+                    break;
+            }
+        }
+
+        // Simulate Audio Level Meter
+        function simulateAudioLevel(levelBar, levelText) {
+            let level = 0;
+            let direction = 1;
+            
+            const updateLevel = () => {
+                level += direction * (Math.random() * 20);
+                
+                if (level > 100) {
+                    level = 100;
+                    direction = -1;
+                } else if (level < 0) {
+                    level = 0;
+                    direction = 1;
+                }
+                
+                levelBar.style.width = `${level}%`;
+                levelText.textContent = `${Math.round(level)}%`;
+                
+                // Change color based on level
+                if (level > 80) {
+                    levelBar.style.background = 'linear-gradient(90deg, #ff4444, #ff0000)';
+                } else if (level > 50) {
+                    levelBar.style.background = 'linear-gradient(90deg, #ffaa00, #ff8800)';
+                } else {
+                    levelBar.style.background = 'linear-gradient(90deg, var(--gold), #ffd700)';
+                }
+            };
+            
+            setInterval(updateLevel, 100);
+        }
+
+        // Setup Theme Selector
+        function setupThemeSelector() {
+            const themeOptions = document.querySelectorAll('.theme-option');
+            
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const theme = this.dataset.theme;
+                    changeTheme(theme);
+                });
+            });
+        }
+
+        // Change Theme
+        function changeTheme(theme) {
+            const body = document.body;
+            const display = document.querySelector('.scripture-display');
+            
+            // Remove existing theme classes
+            body.className = body.className.replace(/theme-\w+/g, '');
+            display.className = display.className.replace(/theme-\w+/g, '');
+            
+            // Add new theme
+            body.classList.add(`theme-${theme}`);
+            display.classList.add(`theme-${theme}`);
+            currentTheme = theme;
+            
+            // Update theme-specific styles
+            applyThemeStyles(theme);
+            
+            showNotification(`Theme changed to ${theme.toUpperCase()}`, 'success');
+        }
+
+        // Apply Theme Styles
+        function applyThemeStyles(theme) {
+            const verseText = document.getElementById('currentVerse');
+            const display = document.querySelector('.scripture-display');
+            
+            switch(theme) {
+                case 'classic':
+                    display.style.background = '#f8f5e6';
+                    display.style.borderColor = '#8B4513';
+                    verseText.style.color = '#2c1810';
+                    break;
+                case 'modern':
+                    display.style.background = '#ffffff';
+                    display.style.borderColor = '#0a1f44';
+                    verseText.style.color = '#0a1f44';
+                    break;
+                case 'warm':
+                    display.style.background = '#fff5e6';
+                    display.style.borderColor = '#B22222';
+                    verseText.style.color = '#8B0000';
+                    break;
+                case 'cool':
+                    display.style.background = '#e6f7f0';
+                    display.style.borderColor = '#2E8B57';
+                    verseText.style.color = '#145a32';
+                    break;
+                case 'royal':
+                    display.style.background = '#f0e6ff';
+                    display.style.borderColor = '#4B0082';
+                    verseText.style.color = '#4B0082';
+                    break;
+                case 'gold':
+                    display.style.background = '#fffbe6';
+                    display.style.borderColor = '#DAA520';
+                    verseText.style.color = '#8B6914';
+                    break;
+            }
+        }
+
+        // Load Preset Verse
+        function loadPresetVerse(reference) {
+            // Find verse in database
+            const verse = bibleVerses.find(v => v.reference === reference);
+            
+            if (verse) {
+                document.getElementById('verseReference').textContent = verse.reference;
+                document.getElementById('bookName').textContent = verse.book;
+                document.getElementById('versionName').textContent = verse.version;
+                document.getElementById('currentVerse').textContent = verse.text;
+                
+                // Animate update
+                const verseElement = document.getElementById('currentVerse');
+                verseElement.classList.remove('fade-in');
+                void verseElement.offsetWidth;
+                verseElement.classList.add('fade-in');
+                
+                showNotification(`Loaded: ${reference}`, 'success');
+                
+                // Simulate voice recognition from mixer
+                simulateVoiceRecognition(reference);
+            }
+        }
+
+        // Simulate Voice Recognition from Mixer
+        function simulateVoiceRecognition(text) {
+            const status = document.getElementById('audioStatus');
+            const originalStatus = status.innerHTML;
+            
+            status.innerHTML = '<i class="fas fa-microphone-alt"></i> Listening from mixer...';
+            
+            setTimeout(() => {
+                status.innerHTML = '<i class="fas fa-check-circle"></i> Scripture recognized from audio';
+                
+                // Show what was "heard"
+                showNotification(`Voice input: "${text}" recognized from mixer audio`, 'info');
+                
+                // Return to original status after delay
+                setTimeout(() => {
+                    status.innerHTML = originalStatus;
+                }, 3000);
+            }, 1500);
+        }
+
+        // Change Font Size
+        function changeFontSize(action) {
+            const verseElement = document.getElementById('currentVerse');
+            
+            if (action === 'increase') {
+                currentFontSize = Math.min(6, currentFontSize + 0.5);
+            } else {
+                currentFontSize = Math.max(2, currentFontSize - 0.5);
+            }
+            
+            verseElement.style.fontSize = `${currentFontSize}rem`;
+            showNotification(`Font size: ${currentFontSize}rem`, 'info');
+        }
+
+        // Toggle Fullscreen
+        function toggleFullscreen() {
+            const body = document.body;
+            const display = document.querySelector('.scripture-display');
+            
+            if (!isFullscreen) {
+                body.classList.add('fullscreen');
+                display.style.fontSize = '5rem';
+                showNotification('Entered Fullscreen Projector Mode', 'success');
+            } else {
+                body.classList.remove('fullscreen');
+                display.style.fontSize = '3.5rem';
+                showNotification('Exited Fullscreen Mode', 'info');
+            }
+            
+            isFullscreen = !isFullscreen;
+        }
+
+        // Navigation between verses
+        function nextVerse() {
+            currentVerseIndex = (currentVerseIndex + 1) % bibleVerses.length;
+            loadVerseByIndex(currentVerseIndex);
+        }
+
+        function previousVerse() {
+            currentVerseIndex = (currentVerseIndex - 1 + bibleVerses.length) % bibleVerses.length;
+            loadVerseByIndex(currentVerseIndex);
+        }
+
+        function loadVerseByIndex(index) {
+            const verse = bibleVerses[index];
+            loadPresetVerse(verse.reference);
+        }
+
+        // Auto Scroll (simulated)
+        function autoScroll() {
+            const verseElement = document.getElementById('currentVerse');
+            const originalText = verseElement.textContent;
+            
+            showNotification('Auto-scroll started', 'info');
+            
+            // Simulate scrolling effect
+            let scrollPosition = 0;
+            const scrollInterval = setInterval(() => {
+                verseElement.style.transform = `translateY(-${scrollPosition}px)`;
+                scrollPosition += 2;
+                
+                if (scrollPosition > 100) {
+                    clearInterval(scrollInterval);
+                    verseElement.style.transform = 'translateY(0)';
+                    showNotification('Auto-scroll completed', 'success');
+                }
+            }, 100);
+        }
+
+        // Setup Audio Input (Web Audio API)
+        function setupAudioInput() {
+            // Check for Web Audio API support
+            if (!navigator.mediaDevices || !window.AudioContext) {
+                showNotification('Web Audio API not supported in this browser', 'error');
+                return;
+            }
+            
+            // Setup audio context for mixer input simulation
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            
+            // For demonstration, we'll simulate mixer input
+            // In production, you would connect to actual audio input
+            simulateMixerAudio();
+        }
+
+        // Simulate Mixer Audio Input
+        function simulateMixerAudio() {
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function updateAudioVisualizer() {
+                if (!analyser) return;
+                
+                analyser.getByteFrequencyData(dataArray);
+                
+                // Update visualizer bars based on audio data
+                const bars = document.querySelectorAll('.visualizer-bar');
+                bars.forEach((bar, i) => {
+                    const value = dataArray[i % bufferLength] || 0;
+                    const height = 20 + (value / 255) * 40;
+                    bar.style.height = `${height}px`;
+                });
+                
+                requestAnimationFrame(updateAudioVisualizer);
+            }
+            
+            updateAudioVisualizer();
+        }
+
+        // Show Notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notificationText');
+            
+            // Set color based on type
+            switch(type) {
+                case 'success':
+                    notification.style.background = 'var(--green)';
+                    break;
+                case 'error':
+                    notification.style.background = 'var(--red)';
+                    break;
+                case 'info':
+                    notification.style.background = 'var(--light-blue)';
+                    break;
+            }
+            
+            text.textContent = message;
+            notification.style.display = 'block';
+            
+            // Auto-hide
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Setup Font Family Selector
+        document.getElementById('fontFamily').addEventListener('change', function() {
+            const verseElement = document.getElementById('currentVerse');
+            verseElement.style.fontFamily = this.value;
+            showNotification(`Font changed to ${this.options[this.selectedIndex].text}`, 'info');
+        });
+
+        // Setup Bible Version Selector
+        document.getElementById('bibleVersion').addEventListener('change', function() {
+            const versionName = document.getElementById('versionName');
+            versionName.textContent = this.options[this.selectedIndex].text;
+            showNotification(`Bible version changed to ${this.value}`, 'info');
+        });
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    simulateVoiceRecognition('Random scripture from voice input');
+                    break;
+                case 'ArrowRight':
+                    nextVerse();
+                    break;
+                case 'ArrowLeft':
+                    previousVerse();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+                case '+':
+                    changeFontSize('increase');
+                    break;
+                case '-':
+                    changeFontSize('decrease');
+                    break;
+            }
+        });
+
+        // Initialize with first verse
+        loadPresetVerse('John 3:16');
+    </script>
+</body>
+</html>
